@@ -1,0 +1,289 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+
+struct TeknikServisKaydi {
+    int musteriID;
+    string musteriAdi;
+    string cihazMarka;
+    string cihazModel;
+    string seriNumarasi;
+    string servisTarihi;
+    string yapilanIslemler;
+};
+
+
+void KayitEkle();
+void KayitListele();
+void KayitSil();
+void KayitDuzenle();
+void DosyayaYaz();
+void DosyadanOku();
+
+int main() {
+    int secim;
+
+    do {
+        cout << "----- Teknik Servis Otomasyonu -----" << endl;
+        cout << "1. Yeni Kayit Ekle" << endl;
+        cout << "2. Kayitlari Listele" << endl;
+        cout << "3. Kayit Sil" << endl;
+        cout << "4. Kayit Duzenle" << endl;
+        cout << "5. Cikis" << endl;
+        cout << "Secim yapiniz: ";
+        cin >> secim;
+
+        switch (secim) {
+            case 1:
+                KayitEkle();
+                break;
+            case 2:
+                KayitListele();
+                break;
+            case 3:
+                KayitSil();
+                break;
+            case 4:
+                KayitDuzenle();
+                break;
+            case 5:
+                DosyayaYaz();  
+                cout << "Programdan cikiliyor..." << endl;
+                break;
+            default:
+                cout << "Gecersiz secim. Tekrar deneyiniz." << endl;
+        }
+    } while (secim != 5);
+
+    return 0;
+}
+
+void KayitEkle() {
+    TeknikServisKaydi yeniKayit;
+
+    cout << "Musteri ID: ";
+    cin >> yeniKayit.musteriID;
+    cout << "Musteri Adi: ";
+    cin.ignore();
+    getline(cin, yeniKayit.musteriAdi);
+    cout << "Cihaz Marka: ";
+    getline(cin, yeniKayit.cihazMarka);
+    cout << "Cihaz Model: ";
+    getline(cin, yeniKayit.cihazModel);
+    cout << "Seri Numarasi: ";
+    getline(cin, yeniKayit.seriNumarasi);
+    cout << "Servis Tarihi: ";
+    getline(cin, yeniKayit.servisTarihi);
+    cout << "Yapilan Islemler: ";
+    getline(cin, yeniKayit.yapilanIslemler);
+
+   
+    ofstream dosya("suad.txt", ios::app); 
+    dosya << yeniKayit.musteriID << ","
+        << yeniKayit.musteriAdi << ","
+        << yeniKayit.cihazMarka << ","
+        << yeniKayit.cihazModel << ","
+        << yeniKayit.seriNumarasi << ","
+        << yeniKayit.servisTarihi << ","
+        << yeniKayit.yapilanIslemler << endl;
+    dosya.close();
+
+    cout << "Kayit basariyla eklendi." << endl;
+}
+
+    void KayitListele() {
+        ifstream dosyaOku("suad.txt");
+
+        TeknikServisKaydi kayit;
+
+        while (dosyaOku >> kayit.musteriID,
+            getline(dosyaOku, kayit.musteriAdi, ','),
+            getline(dosyaOku, kayit.cihazMarka, ','),
+            getline(dosyaOku, kayit.cihazModel, ','),
+            getline(dosyaOku, kayit.seriNumarasi, ','),
+            getline(dosyaOku, kayit.servisTarihi, ','),
+            getline(dosyaOku, kayit.yapilanIslemler)) {
+            cout << "Musteri ID: " << kayit.musteriID << endl;
+            cout << "Musteri Adi: " << kayit.musteriAdi << endl;
+            cout << "Cihaz Marka: " << kayit.cihazMarka << endl;
+            cout << "Cihaz Model: " << kayit.cihazModel << endl;
+            cout << "Seri Numarasi: " << kayit.seriNumarasi << endl;
+            cout << "Servis Tarihi: " << kayit.servisTarihi << endl;
+            cout << "Yapilan Islemler: " << kayit.yapilanIslemler << endl;
+            cout << "------------------------------------" << endl;
+        }
+
+        dosyaOku.close();
+    }
+
+
+void KayitSil() {
+    int silinecekMusteriID;
+    cout << "Silinecek Musteri ID'sini girin: ";
+    cin >> silinecekMusteriID;
+
+    ifstream dosyaOku("suad.txt");
+    ofstream tempDosya("temp.txt");
+
+    TeknikServisKaydi kayit;
+
+    bool kayitVarMi = false;
+
+    while (dosyaOku >> kayit.musteriID,
+        getline(dosyaOku, kayit.musteriAdi, ','),
+        getline(dosyaOku, kayit.cihazMarka, ','),
+        getline(dosyaOku, kayit.cihazModel, ','),
+        getline(dosyaOku, kayit.seriNumarasi, ','),
+        getline(dosyaOku, kayit.servisTarihi, ','),
+        getline(dosyaOku, kayit.yapilanIslemler)) {
+        if (kayit.musteriID == silinecekMusteriID) {
+            cout << "Musteri ID: " << kayit.musteriID << endl;
+            cout << "Musteri Adi: " << kayit.musteriAdi << endl;
+            cout << "Cihaz Marka: " << kayit.cihazMarka << endl;
+            cout << "Cihaz Model: " << kayit.cihazModel << endl;
+            cout << "Seri Numarasi: " << kayit.seriNumarasi << endl;
+            cout << "Servis Tarihi: " << kayit.servisTarihi << endl;
+            cout << "Yapilan Islemler: " << kayit.yapilanIslemler << endl;
+            cout << "------------------------------------" << endl;
+            kayitVarMi = true;
+        }
+        else {
+            tempDosya << kayit.musteriID << ","
+                << kayit.musteriAdi << ","
+                << kayit.cihazMarka << ","
+                << kayit.cihazModel << ","
+                << kayit.seriNumarasi << ","
+                << kayit.servisTarihi << ","
+                << kayit.yapilanIslemler << endl;
+        }
+    }
+
+    dosyaOku.close();
+    tempDosya.close();
+
+    remove("suad.txt");
+    rename("temp.txt", "suad.txt");
+
+    if (kayitVarMi) {
+        cout << "Kayit basariyla silindi." << endl;
+        DosyayaYaz(); 
+    }
+    else {
+        cout << "Boyle bir kayit bulunamadi." << endl;
+    }
+}
+
+void KayitDuzenle() {
+    int duzenlenecekMusteriID;
+    cout << "Duzenlenecek Musteri ID'sini girin: ";
+    cin >> duzenlenecekMusteriID;
+
+    ifstream dosyaOku("suad.txt");
+    ofstream tempDosya("temp.txt");
+
+    TeknikServisKaydi kayit;
+
+    bool kayitVarMi = false;
+
+    while (dosyaOku >> kayit.musteriID >> ws,
+           getline(dosyaOku, kayit.musteriAdi, ','),
+           getline(dosyaOku, kayit.cihazMarka, ','),
+           getline(dosyaOku, kayit.cihazModel, ','),
+           getline(dosyaOku, kayit.seriNumarasi, ','),
+           getline(dosyaOku, kayit.servisTarihi, ','),
+           getline(dosyaOku, kayit.yapilanIslemler)) {
+        if (kayit.musteriID == duzenlenecekMusteriID) {
+            cout << "Musteri ID: " << kayit.musteriID << endl;
+            cout << "Musteri Adi: " << kayit.musteriAdi << endl;
+            cout << "Cihaz Marka: " << kayit.cihazMarka << endl;
+            cout << "Cihaz Model: " << kayit.cihazModel << endl;
+            cout << "Seri Numarasi: " << kayit.seriNumarasi << endl;
+            cout << "Servis Tarihi: " << kayit.servisTarihi << endl;
+            cout << "Yapilan Islemler: " << kayit.yapilanIslemler << endl;
+
+            cout << "Yeni Bilgileri Girin:" << endl;
+            cout << "Musteri ID: ";
+            cin >> kayit.musteriID;
+            cout << "Musteri Adi: ";
+            cin.ignore();
+            getline(cin, kayit.musteriAdi);
+            cout << "Cihaz Marka: ";
+            getline(cin, kayit.cihazMarka);
+            cout << "Cihaz Model: ";
+            getline(cin, kayit.cihazModel);
+            cout << "Seri Numarasi: ";
+            getline(cin, kayit.seriNumarasi);
+            cout << "Servis Tarihi: ";
+            getline(cin, kayit.servisTarihi);
+            cout << "Yapilan Islemler: ";
+            getline(cin, kayit.yapilanIslemler);
+
+            tempDosya << kayit.musteriID << ","
+                      << kayit.musteriAdi << ","
+                      << kayit.cihazMarka << ","
+                      << kayit.cihazModel << ","
+                      << kayit.seriNumarasi << ","
+                      << kayit.servisTarihi << ","
+                      << kayit.yapilanIslemler << endl;
+
+            kayitVarMi = true;
+        } else {
+            tempDosya << kayit.musteriID << ","
+                      << kayit.musteriAdi << ","
+                      << kayit.cihazMarka << ","
+                      << kayit.cihazModel << ","
+                      << kayit.seriNumarasi << ","
+                      << kayit.servisTarihi << ","
+                      << kayit.yapilanIslemler << endl;
+        }
+    }
+
+    dosyaOku.close();
+    tempDosya.close();
+
+    remove("suad.txt");
+    rename("temp.txt", "suad.txt");
+
+    if (kayitVarMi) {
+        cout << "Kayit basariyla duzenlendi." << endl;
+    } else {
+        cout << "Boyle bir kayit bulunamadi." << endl;
+    }
+}
+
+void DosyayaYaz() {
+    
+}
+
+void DosyadanOku() {
+    ifstream dosya("suad.txt");
+    TeknikServisKaydi kayit;
+
+    if (!dosya.is_open()) {
+        cout << "Dosya acilamadi." << endl;
+        return;
+    }
+
+    cout << "----- Teknik Servis Kayitlari -----" << endl;
+    while (dosya >> kayit.musteriID,
+        getline(dosya, kayit.musteriAdi, ','),
+        getline(dosya, kayit.cihazMarka, ','),
+        getline(dosya, kayit.cihazModel, ','),
+        getline(dosya, kayit.seriNumarasi, ','),
+        getline(dosya, kayit.servisTarihi, ','),
+        getline(dosya, kayit.yapilanIslemler)) {
+        cout << "Musteri ID: " << kayit.musteriID << endl;
+        cout << "Musteri Adi: " << kayit.musteriAdi << endl;
+        cout << "Cihaz Marka: " << kayit.cihazMarka << endl;
+        cout << "Cihaz Model: " << kayit.cihazModel << endl;
+        cout << "Seri Numarasi: " << kayit.seriNumarasi << endl;
+        cout << "Servis Tarihi: " << kayit.servisTarihi << endl;
+        cout << "Yapilan Islemler: " << kayit.yapilanIslemler << endl;
+        cout << "------------------------------------" << endl;
+    }
+
+    dosya.close();
+}
